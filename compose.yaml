@@ -1,0 +1,6 @@
+﻿services:
+  dms_swen3:
+    image: dms_swen3
+    build:
+      context: .
+      dockerfile: DMS_SWEN3/Dockerfile
