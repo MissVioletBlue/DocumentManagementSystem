@@ -1,0 +1,10 @@
+bug d73a4a Fehler im Code oder unerwartetes Verhalten
+enhancement a2eeef Neue Funktion oder Verbesserung
+documentation 0075ca Anpassungen an Dokumentation oder Kommentaren
+refactor fbca04 Code-Umstrukturierung ohne Funktionsänderung
+test bfe5bf Tests oder Testinfrastruktur
+question d4c5f9 Klärungsbedarf, Rückfragen, Diskussion
+good-first-issue 7057ff Einfache Aufgabe für den Einstieg
+blocked 000000 Gesperrt bis Abhängigkeiten geklärt sind
+in-review cfd3d7 Wartet auf Code-Review
+high-priority b60205 Hohe Priorität, zeitkritisch
