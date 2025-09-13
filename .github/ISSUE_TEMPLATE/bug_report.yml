@@ -1,0 +1,77 @@
+﻿name: Fehler melden
+description: Melden Sie einen Fehler oder unerwartetes Verhalten.
+title: "[BUG] Kurze, prägnante Zusammenfassung"
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: "Bitte alle Abschnitte sorgfältig ausfüllen. Pflichtfelder sind gekennzeichnet."
+  - type: textarea
+    id: description
+    attributes:
+      label: Beschreibung
+      description: Kurze, sachliche Beschreibung des Fehlers.
+      placeholder: "Was ist passiert?"
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Schritte zur Reproduktion
+      description: Bitte nummeriert angeben.
+      placeholder: |
+        1. …
+        2. …
+        3. …
+    validations:
+      required: true
+  - type: input
+    id: expected
+    attributes:
+      label: Erwartetes Verhalten
+      placeholder: "Was sollte stattdessen geschehen?"
+    validations:
+      required: true
+  - type: input
+    id: actual
+    attributes:
+      label: Tatsächliches Verhalten
+      placeholder: "Was geschah tatsächlich?"
+    validations:
+      required: true
+  - type: dropdown
+    id: severity
+    attributes:
+      label: Schweregrad
+      options:
+        - Trivial
+        - Niedrig
+        - Mittel
+        - Hoch
+        - Kritisch
+      description: Einschätzung der Auswirkung auf Nutzer und System.
+    validations:
+      required: true
+  - type: input
+    id: env_os
+    attributes:
+      label: Umgebung – Betriebssystem
+      placeholder: "z. B. Windows 11, macOS 14, Ubuntu 24.04"
+    validations:
+      required: true
+  - type: input
+    id: env_branch
+    attributes:
+      label: Umgebung – Branch/Commit
+      placeholder: "z. B. feature/x @ abcdef1"
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevante Logs oder Screenshots
+      description: Sensible Daten vor dem Hochladen entfernen.
+      placeholder: "Logauszug oder Link zu Artefakten"
+    validations:
+      required: false

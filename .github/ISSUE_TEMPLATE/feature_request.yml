@@ -1,0 +1,52 @@
+﻿name: Funktionsvorschlag
+description: Schlagen Sie eine neue Funktion oder Verbesserung vor.
+title: "[FEATURE] Kurze, prägnante Zusammenfassung"
+labels:
+  - enhancement
+body:
+  - type: textarea
+    id: summary
+    attributes:
+      label: Zusammenfassung
+      description: Kurzbeschreibung der gewünschten Funktion oder Verbesserung.
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problemstellung/Nutzen
+      description: Welches Problem wird gelöst? Welcher Mehrwert entsteht?
+      placeholder: "Problem, Zielgruppe, erwarteter Nutzen"
+    validations:
+      required: true
+  - type: textarea
+    id: scope
+    attributes:
+      label: Umfang und Nicht-Ziele
+      description: Was gehört dazu, was ausdrücklich nicht?
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Akzeptanzkriterien
+      description: Konkrete, überprüfbare Kriterien.
+      placeholder: |
+        - [ ] Kriterium 1
+        - [ ] Kriterium 2
+    validations:
+      required: true
+  - type: textarea
+    id: implementation
+    attributes:
+      label: Umsetzungsideen
+      description: Technische Hinweise, Architektur, betroffene Komponenten.
+    validations:
+      required: false
+  - type: textarea
+    id: risks
+    attributes:
+      label: Risiken und Abhängigkeiten
+      description: Externe Faktoren, technische Risiken, Sequenzierung.
+    validations:
+      required: false

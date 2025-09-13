@@ -1,0 +1,45 @@
+﻿name: Aufgabe
+description: Allgemeine Aufgabe mit überprüfbaren Ergebnissen.
+title: "[TASK] Kurze, prägnante Zusammenfassung"
+labels: []
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: Beschreibung
+      description: Was ist zu erledigen?
+    validations:
+      required: true
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priorität
+      options:
+        - Normal
+        - Hoch
+      description: Bei „Hoch“ bitte Label „high priority“ manuell setzen.
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Definition of Done / Akzeptanzkriterien
+      placeholder: |
+        - [ ] Kriterium 1
+        - [ ] Kriterium 2
+    validations:
+      required: true
+  - type: textarea
+    id: dependencies
+    attributes:
+      label: Abhängigkeiten
+      description: Blockierende Issues, externe Freigaben.
+    validations:
+      required: false
+  - type: input
+    id: estimate
+    attributes:
+      label: Aufwandsschätzung
+      placeholder: "z. B. 4h, 1 PT"
+    validations:
+      required: false

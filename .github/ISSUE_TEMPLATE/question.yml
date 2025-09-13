@@ -1,0 +1,20 @@
+﻿name: Rückfrage/Klärung
+description: Präzise Fragestellung zur weiteren Abstimmung.
+title: "[QUESTION] Kurze, prägnante Zusammenfassung"
+labels:
+  - question
+body:
+  - type: textarea
+    id: question
+    attributes:
+      label: Fragestellung
+      description: Bitte klar und knapp formulieren.
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: Kontext
+      description: Relevante Informationen, Links, Bezug zu Anforderungen.
+    validations:
+      required: false

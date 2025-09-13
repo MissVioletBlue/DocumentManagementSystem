@@ -1,0 +1,27 @@
+﻿name: Refactoring
+description: Strukturelle Code-Verbesserungen ohne Verhaltensänderung.
+title: "[REFACTOR] Kurze, prägnante Zusammenfassung"
+labels:
+  - refactor
+body:
+  - type: textarea
+    id: motivation
+    attributes:
+      label: Zielsetzung
+      description: Was wird verbessert (Lesbarkeit, Modularität, Performance, Wartbarkeit)?
+    validations:
+      required: true
+  - type: textarea
+    id: scope
+    attributes:
+      label: Umfang
+      description: Betroffene Module/Komponenten.
+    validations:
+      required: true
+  - type: textarea
+    id: risk
+    attributes:
+      label: Risiken und Teststrategie
+      description: Wie wird sichergestellt, dass sich das Verhalten nicht ändert?
+    validations:
+      required: true

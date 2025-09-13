@@ -1,0 +1,23 @@
+﻿name: Dokumentation
+description: Änderungen an Dokumentation, Kommentaren oder Anleitungen.
+title: "[DOCS] Kurze, prägnante Zusammenfassung"
+labels:
+  - documentation
+body:
+  - type: textarea
+    id: scope
+    attributes:
+      label: Umfang
+      description: Welche Dokumente/Abschnitte sind betroffen?
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Akzeptanzkriterien
+      placeholder: |
+        - [ ] Inhalte sind aktuell und korrekt
+        - [ ] Links/Referenzen geprüft
+        - [ ] Rechtschreibung/Formatierung geprüft
+    validations:
+      required: true
