@@ -21,10 +21,7 @@ var summaries = new[]
     "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
 };
 
-app.MapGet( "/health", () =>
-{
-    return Results.Ok(new { status = "Healthy", time = DateTime.UtcNow });
-});
+app.MapGet( "/health", () => Results.Ok(new { status = "Healthy", time = DateTime.UtcNow }));
 
 app.MapGet("/weatherforecast", () =>
     {
