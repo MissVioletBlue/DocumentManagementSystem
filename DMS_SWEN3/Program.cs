@@ -63,7 +63,6 @@ app.MapPost("/api/documents", async (CreateDocumentDto dto, IDocumentRepository 
 {
     if (string.IsNullOrWhiteSpace(dto.DocumentTitle))
         return Results.BadRequest("DocumentTitle is required.");
-
     var model = new DocumentModel
     {
         DocumentTitle = dto.DocumentTitle,
