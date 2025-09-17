@@ -7,13 +7,24 @@ using Microsoft.EntityFrameworkCore;
 var builder = WebApplication.CreateBuilder(args);
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-if (string.IsNullOrWhiteSpace(connectionString))
+var useInMemory = builder.Configuration.GetValue<bool>("UseInMemoryTestDatabase");
+if (!useInMemory && string.IsNullOrWhiteSpace(connectionString))
     throw new InvalidOperationException("A connection string named 'DefaultConnection' was not provided.");
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddDbContext<DocumentDbContext>(opt => opt.UseNpgsql(connectionString));
+if (useInMemory)
+{
+    builder.Services.AddDbContext<DocumentDbContext>(opt =>
+        opt.UseInMemoryDatabase("tests"));
+}
+else
+{
+    builder.Services.AddDbContext<DocumentDbContext>(opt =>
+        opt.UseNpgsql(connectionString));
+}
+
 builder.Services.AddScoped<IDocumentRepository, DocumentRepository>();
 
 var app = builder.Build();
@@ -21,7 +32,8 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<DocumentDbContext>();
-    db.Database.Migrate();
+    if (db.Database.IsRelational())
+        db.Database.Migrate();
 }
 
 if (app.Environment.IsDevelopment())
@@ -70,10 +82,10 @@ app.MapPut("/api/documents/{id:int}", async (int id, UpdateDocumentDto dto, IDoc
     var existing = await repo.GetAsync(id, ct);
     if (existing is null) return Results.NotFound();
 
-    existing.DocumentTitle   = dto.DocumentTitle;
-    existing.DocumentLocation= dto.DocumentLocation;
-    existing.DocumentAuthor  = dto.DocumentAuthor;
-    existing.DocumentTags    = dto.DocumentTags;
+    existing.DocumentTitle    = dto.DocumentTitle;
+    existing.DocumentLocation = dto.DocumentLocation;
+    existing.DocumentAuthor   = dto.DocumentAuthor;
+    existing.DocumentTags     = dto.DocumentTags;
 
     var ok = await repo.UpdateAsync(existing, ct);
     return ok ? Results.NoContent() : Results.StatusCode(500);
@@ -89,3 +101,5 @@ app.Run();
 // mapper helper
 static DocumentDto ToDto(DocumentModel m) =>
     new(m.UniqueIdentifier, m.DocumentTitle!, m.DocumentLocation, m.DocumentAuthor, m.DocumentTags);
+
+public partial class Program { }

@@ -73,4 +73,44 @@ public class DocumentRepositoryTests
         var missing = await _repo.GetAsync(doc.UniqueIdentifier);
         missing.Should().BeNull();
     }
+    
+    [Test]
+    public async Task Get_ReturnsNull_ForMissingId()
+    {
+        var missing = await _repo.GetAsync(999);
+        missing.Should().BeNull();
+    }
+
+    [Test]
+    public async Task Search_ReturnsAll_WhenQueryIsNullOrWhitespace()
+    {
+        await _repo.AddAsync(new DocumentModel { DocumentTitle = "One" });
+        await _repo.AddAsync(new DocumentModel { DocumentTitle = "Two" });
+
+        var all = await _repo.SearchAsync(null);
+        all.Should().HaveCount(2);
+
+        var alsoAll = await _repo.SearchAsync("   ");
+        alsoAll.Should().HaveCount(2);
+    }
+
+    [Test]
+    public async Task Tags_Roundtrip_Persists()
+    {
+        var doc = await _repo.AddAsync(new DocumentModel
+        {
+            DocumentTitle = "Tagged",
+            DocumentTags = new[] { "swen3", "dms" }
+        });
+
+        var loaded = await _repo.GetAsync(doc.UniqueIdentifier);
+        loaded!.DocumentTags.Should().BeEquivalentTo(new[] { "swen3", "dms" });
+    }
+
+    [Test]
+    public async Task Delete_ReturnsFalse_WhenMissing()
+    {
+        var ok = await _repo.DeleteAsync(12345);
+        ok.Should().BeFalse();
+    }
 }
