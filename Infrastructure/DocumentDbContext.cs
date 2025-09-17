@@ -6,12 +6,13 @@ namespace Infrastructure;
 
 public class DocumentDbContext : DbContext
 {
-    public DbSet<DocumentModel> Documents { get; set; } = null!;
-
     public DocumentDbContext(DbContextOptions<DocumentDbContext> options) : base(options)
     {
+        
     }
-    
+
+    public DbSet<DocumentModel> Documents => Set<DocumentModel>();
+
     protected override void OnModelCreating(ModelBuilder builder)
     {
         builder.Entity<DocumentModel>().Property(document => document.DocumentTags).HasColumnType("text[]");
