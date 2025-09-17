@@ -4,16 +4,19 @@ namespace Domain;
 
 public class DocumentModel
 {
-    [Required]
+    [Key]
     public int UniqueIdentifier { get; set; }
+    [Required, MaxLength(256)]
     public string? DocumentTitle { get; set; }
+    [MaxLength(2048)]
     public string? DocumentLocation { get; set; }
     
     // Metadata
     
     public TimeSpan? DocumentCreationDate { get; set; }
+    [MaxLength(256)]
     public string? DocumentAuthor { get; set; }
-    public List<string>? DocumentTags { get; set; }
+    public string[]? DocumentTags { get; set; }
     
     
 }

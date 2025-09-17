@@ -19,5 +19,8 @@ public class DocumentDbContext : DbContext
         optionsBuilder.UseNpgsql(_configuration.GetConnectionString("DefaultConnection"));
     }
     
-    
+    protected override void OnModelCreating(ModelBuilder builder)
+    {
+        builder.Entity<DocumentModel>().Property(document => document.DocumentTags).HasColumnType("text[]");
+    }
 }
