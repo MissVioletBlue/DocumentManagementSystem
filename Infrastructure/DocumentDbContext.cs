@@ -6,17 +6,10 @@ namespace Infrastructure;
 
 public class DocumentDbContext : DbContext
 {
-    private readonly IConfiguration _configuration;
-    
-    public DbSet<DocumentModel> Documents { get; set; }
-    
-    public DocumentDbContext(IConfiguration configuration){
-        _configuration = configuration;
-    }
+    public DbSet<DocumentModel> Documents { get; set; } = null!;
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    public DocumentDbContext(DbContextOptions<DocumentDbContext> options) : base(options)
     {
-        optionsBuilder.UseNpgsql(_configuration.GetConnectionString("DefaultConnection"));
     }
     
     protected override void OnModelCreating(ModelBuilder builder)
