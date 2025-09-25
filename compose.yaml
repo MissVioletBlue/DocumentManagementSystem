@@ -50,6 +50,44 @@
     ports:
       - "${PGADMIN_PORT:-8080}:80"
     restart: unless-stopped
+    
+  nginx:
+    image: nginx:alpine
+    ports:
+    - "8081:80"
+    volumes:
+    - ./DMS_SWEN3/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+    - paperless
+    - dms_swen3
+    networks: [postgres]
+  
+  paperless:
+    image: ghcr.io/paperless-ngx/paperless-ngx:latest
+    ports:
+    - "8000:8000"
+    environment:
+      PAPERLESS_SECRET_KEY: example123
+      PAPERLESS_DBHOST: postgres
+      PAPERLESS_DBPORT: 5432
+      PAPERLESS_DBNAME: paperless_ngx
+      PAPERLESS_DBUSER: ${POSTGRES_USER}
+      PAPERLESS_DBPASS: ${POSTGRES_PASSWORD}
+      PAPERLESS_REDIS: redis://redis:6379
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    volumes:
+    - paperless_data:/usr/src/paperless/data
+    - paperless_media:/usr/src/paperless/media
+    networks: [postgres]
+      
+  redis:
+    image: redis:alpine
+    command: [ "redis-server", "--appendonly", "yes" ]
+    networks: [ postgres ]
 
 networks:
   postgres:
@@ -58,3 +96,5 @@ networks:
 volumes:
   postgres:
   pgadmin:
+  paperless_data:
+  paperless_media:
