@@ -9,12 +9,13 @@
         condition: service_healthy
     environment:
       - ASPNETCORE_URLS=http://+:8080
-      - ConnectionStrings__DefaultConnection=Host=postgres;Port=5432;Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}
+      - ConnectionStrings__DefaultConnection=Host=postgres;Port=${POSTGRES_PORT};Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}
       - ASPNETCORE_ENVIRONMENT=Development
     ports:
       - "8080:8080"
     networks:
       - postgres
+    restart: unless-stopped
 
   postgres:
     image: postgis/postgis:15-3.3
@@ -27,8 +28,6 @@
       - postgres:/data/postgres
     networks:
       - postgres
-    ports:
-      - "5433:5432"
     restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
@@ -48,7 +47,7 @@
     networks:
       - postgres
     ports:
-      - "${PGADMIN_PORT:-8080}:80"
+      - "${PGADMIN_PORT}:80"
     restart: unless-stopped
     
   nginx:
@@ -63,11 +62,10 @@
       dms_swen3:
         condition: service_started
     networks: [postgres]
+    restart: unless-stopped
   
   paperless:
     image: ghcr.io/paperless-ngx/paperless-ngx:latest
-    ports:
-    - "8000:8000"
     environment:
       PAPERLESS_SECRET_KEY: ${PAPERLESS_SECRET_KEY}
       PAPERLESS_DBHOST: ${PAPERLESS_DBHOST}
@@ -85,11 +83,13 @@
     - paperless_data:/usr/src/paperless/data
     - paperless_media:/usr/src/paperless/media
     networks: [postgres]
+    restart: unless-stopped
       
   redis:
     image: redis:alpine
     command: [ "redis-server", "--appendonly", "yes" ]
     networks: [ postgres ]
+    restart: unless-stopped
 
 networks:
   postgres:
