@@ -11,8 +11,6 @@
       - ASPNETCORE_URLS=http://+:8080
       - ConnectionStrings__DefaultConnection=Host=postgres;Port=${POSTGRES_PORT};Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}
       - ASPNETCORE_ENVIRONMENT=Development
-    ports:
-      - "8080:8080"
     networks:
       - postgres
     restart: unless-stopped
@@ -49,21 +47,44 @@
     ports:
       - "${PGADMIN_PORT}:80"
     restart: unless-stopped
-    
+
   nginx:
     image: nginx:alpine
     ports:
-    - "8081:80"
+      - "8081:80"
     volumes:
-    - ./DMS_SWEN3/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./DMS_SWEN3/nginx.conf:/etc/nginx/conf.d/default.conf:ro
     depends_on:
       paperless:
         condition: service_healthy
       dms_swen3:
         condition: service_started
-    networks: [postgres]
+      client:
+        condition: service_healthy
+    networks:
+      - postgres
     restart: unless-stopped
-  
+
+  client:
+    image: dms_client
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+      args:
+        VITE_API_BASE_URL: /api
+    depends_on:
+      dms_swen3:
+        condition: service_started
+    networks:
+      - postgres
+    restart: unless-stopped
+    healthcheck:
+      test: [ "CMD-SHELL", "test -s /usr/share/nginx/html/index.html || wget -q --spider http://localhost/" ]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 10s
+
   paperless:
     image: ghcr.io/paperless-ngx/paperless-ngx:latest
     environment:
@@ -80,15 +101,17 @@
       redis:
         condition: service_started
     volumes:
-    - paperless_data:/usr/src/paperless/data
-    - paperless_media:/usr/src/paperless/media
-    networks: [postgres]
+      - paperless_data:/usr/src/paperless/data
+      - paperless_media:/usr/src/paperless/media
+    networks:
+      - postgres
     restart: unless-stopped
-      
+
   redis:
     image: redis:alpine
     command: [ "redis-server", "--appendonly", "yes" ]
-    networks: [ postgres ]
+    networks:
+      - postgres
     restart: unless-stopped
 
 networks:
