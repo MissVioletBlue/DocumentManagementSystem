@@ -34,7 +34,7 @@ function AppLayout({ activePath, children }: AppLayoutProps) {
               </nav>
           </header>
           <main className="app-main">{children}</main>
-          <footer className="app-footer">Powered by DMS SWEN3</footer>
+          <footer className="app-footer">Made by Sura and Matteo</footer>
       </div>
   )
 }
