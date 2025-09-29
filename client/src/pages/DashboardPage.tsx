@@ -66,7 +66,7 @@ const DashboardPage = ({ query }: DashboardPageProps) => {
             <div className="dashboard__header">
                 <div>
                     <h1 className="page-title">Documents</h1>
-                    <p className="page-subtitle">Search and review documents ingested through the DMS API.</p>
+                    <p className="page-subtitle">Search and review documents ingested through the Software Engineering 3 DMS API.</p>
                 </div>
                 <form className="search" onSubmit={handleSubmit}>
                     <label className="search__label" htmlFor="query">
