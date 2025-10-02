@@ -43,9 +43,9 @@ if (app.Environment.IsDevelopment())
 }
 
 
-app.MapGet("/health", () => Results.Ok(new { status = "Healthy", time = DateTime.UtcNow }));
+app.MapGet("/api/health", () => Results.Ok(new { status = "Healthy", time = DateTime.UtcNow }));
 
-app.MapGet("/api/documents/{id:int}", async (int id, IDocumentRepository repo, CancellationToken ct) =>
+    app.MapGet("/api/documents/{id:int}", async (int id, IDocumentRepository repo, CancellationToken ct) =>
 {
     var doc = await repo.GetAsync(id, ct);
     return doc is null ? Results.NotFound() : Results.Ok(ToDto(doc));
