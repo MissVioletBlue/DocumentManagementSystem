@@ -5,6 +5,7 @@ using Domain.Exceptions;
 using Infrastructure;
 using Infrastructure.Documents;
 using Infrastructure.Exceptions;
+using Infrastructure.Messaging;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
@@ -60,21 +61,32 @@ else
 }
 
 builder.Services.AddScoped<IDocumentRepository, DocumentRepository>();
-builder.Services.Configure<RabbitMqOptions>(builder.Configuration.GetSection("RabbitMq"));
-builder.Services.AddSingleton<IConnectionFactory>(sp =>
+
+if (builder.Environment.IsEnvironment("Testing"))
 {
-    var options = sp.GetRequiredService<IOptions<RabbitMqOptions>>().Value;
-    return new ConnectionFactory
+    builder.Services.AddSingleton<IDocumentQueuePublisher, NoOpDocumentQueuePublisher>();
+}
+else
+{
+    builder.Services.Configure<RabbitMqOptions>(builder.Configuration.GetSection("RabbitMq"));
+    builder.Services.AddSingleton<IConnectionFactory>(sp =>
     {
-        HostName = options.HostName,
-        Port = options.Port,
-        VirtualHost = options.VirtualHost,
-        UserName = options.UserName,
-        Password = options.Password,
-        DispatchConsumersAsync = true
-    };
-});
-builder.Services.AddSingleton<IDocumentQueuePublisher, RabbitMqDocumentPublisher>();
+        var options = sp.GetRequiredService<IOptions<RabbitMqOptions>>().Value;
+        if (string.IsNullOrWhiteSpace(options.HostName))
+            throw new InvalidOperationException("RabbitMQ configuration is missing the host name.");
+
+        return new ConnectionFactory
+        {
+            HostName = options.HostName,
+            Port = options.Port,
+            VirtualHost = options.VirtualHost,
+            UserName = options.UserName,
+            Password = options.Password,
+            DispatchConsumersAsync = true
+        };
+    });
+    builder.Services.AddSingleton<IDocumentQueuePublisher, RabbitMqDocumentPublisher>();
+}
 
 var app = builder.Build();
 
@@ -92,9 +104,11 @@ if (app.Environment.IsDevelopment())
 }
 
 
-app.MapGet("/api/health", () => Results.Ok(new { status = "Healthy", time = DateTime.UtcNow }));
+var healthHandler = () => Results.Ok(new { status = "Healthy", time = DateTime.UtcNow });
+app.MapGet("/health", healthHandler);
+app.MapGet("/api/health", healthHandler).ExcludeFromDescription();
 
-        app.MapGet("/api/documents/{id:int}", async (int id, IDocumentRepository repo, CancellationToken ct) =>
+app.MapGet("/api/documents/{id:int}", async (int id, IDocumentRepository repo, CancellationToken ct) =>
 {
     var doc = await repo.GetAsync(id, ct);
     return doc is null ? Results.NotFound() : Results.Ok(ToDto(doc));

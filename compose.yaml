@@ -1,4 +1,4 @@
-﻿services:
+services:
   dms_swen3:
     image: dms_swen3
     build:
@@ -7,10 +7,18 @@
     depends_on:
       postgres:
         condition: service_healthy
+      rabbitmq:
+        condition: service_started
     environment:
       - ASPNETCORE_URLS=http://+:8080
       - ConnectionStrings__DefaultConnection=Host=postgres;Port=${POSTGRES_PORT};Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}
       - ASPNETCORE_ENVIRONMENT=Development
+      - RabbitMq__HostName=rabbitmq
+      - RabbitMq__Port=5672
+      - RabbitMq__VirtualHost=/
+      - RabbitMq__UserName=${RABBITMQ_DEFAULT_USER}
+      - RabbitMq__Password=${RABBITMQ_DEFAULT_PASS}
+      - RabbitMq__QueueName=documents.uploaded
     networks: [backend]
     restart: unless-stopped
 
@@ -112,12 +120,32 @@
     networks: [backend, edge]
     image: rabbitmq:4.1-management
     ports:
-    - "127.0.0.1:15672:15672"
+      - "127.0.0.1:5672:5672"
+      - "127.0.0.1:15672:15672"
     environment:
       RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
       RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
     volumes:
       - rabbitmq_data:/var/lib/rabbitmq
+    restart: unless-stopped
+
+  ocr_worker:
+    image: dms_ocr_worker
+    build:
+      context: ./OcrWorker
+      dockerfile: Dockerfile
+    depends_on:
+      rabbitmq:
+        condition: service_started
+    environment:
+      - DOTNET_ENVIRONMENT=Development
+      - RabbitMq__HostName=rabbitmq
+      - RabbitMq__Port=5672
+      - RabbitMq__VirtualHost=/
+      - RabbitMq__UserName=${RABBITMQ_DEFAULT_USER}
+      - RabbitMq__Password=${RABBITMQ_DEFAULT_PASS}
+      - RabbitMq__QueueName=documents.uploaded
+    networks: [backend]
     restart: unless-stopped
 
 networks:
