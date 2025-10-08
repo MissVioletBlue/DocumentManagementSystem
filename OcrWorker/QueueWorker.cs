@@ -1,7 +1,6 @@
-﻿using System.Text;
+using System.Text;
 using System.Threading;
 using Infrastructure.Messaging;
-using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -33,8 +32,16 @@ public sealed class QueueWorker : BackgroundService
         _logger.LogInformation("Starting OCR worker listening to queue {Queue}", _options.QueueName);
         stoppingToken.Register(DisposeResources);
 
-        _connection = _connectionFactory.CreateConnection();
-        _channel = _connection.CreateModel();
+        try
+        {
+            _connection = _connectionFactory.CreateConnection();
+            _channel = _connection.CreateModel();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogCritical(ex, "Unable to establish RabbitMQ connection");
+            throw;
+        }
         _channel.QueueDeclare(queue: _options.QueueName, durable: true, exclusive: false, autoDelete: false);
 
         var consumer = new AsyncEventingBasicConsumer(_channel);

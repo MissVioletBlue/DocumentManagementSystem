@@ -1,9 +1,9 @@
-﻿namespace Infrastructure.Messaging;
+namespace Infrastructure.Messaging;
 
 using System.Text;
 using System.Text.Json;
 using Application.Messaging;
-using Exceptions;
+using Infrastructure.Exceptions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
