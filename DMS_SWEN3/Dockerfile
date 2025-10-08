@@ -21,6 +21,7 @@ COPY Infrastructure/Infrastructure.csproj Infrastructure/
 COPY Domain/Domain.csproj Domain/
 COPY Application/Application.csproj Application/
 COPY UnitTests/UnitTests.csproj UnitTests/
+COPY OcrWorker/OcrWorker.csproj OcrWorker/
 
 # Restore at solution level
 RUN dotnet restore DMS_SWEN3.sln
