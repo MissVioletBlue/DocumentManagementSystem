@@ -1,8 +1,4 @@
 using System.Text;
-using System.Threading;
-using Infrastructure.Messaging;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
@@ -15,7 +11,7 @@ public sealed class QueueWorker : BackgroundService
     private readonly IRabbitConnectionFactory _connectionFactory;
     private readonly RabbitMqOptions _options;
     private IConnection? _connection;
-    private IModel? _channel;
+    private RabbitMQ.Client.IModel? _channel;
 
     public QueueWorker(
         ILogger<QueueWorker> logger,
