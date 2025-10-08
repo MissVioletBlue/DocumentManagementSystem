@@ -5,6 +5,7 @@ using FluentAssertions;
 using Infrastructure;
 using Infrastructure.Documents;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging.Abstractions;
 using NUnit.Framework;
 
 namespace UnitTests;
@@ -22,7 +23,7 @@ public class DocumentRepositoryTests
             .Options;
 
         _ctx = new DocumentDbContext(opts);
-        _repo = new DocumentRepository(_ctx);
+        _repo = new DocumentRepository(_ctx, NullLogger<DocumentRepository>.Instance);
     }
 
     [TearDown]
