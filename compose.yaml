@@ -11,8 +11,7 @@
       - ASPNETCORE_URLS=http://+:8080
       - ConnectionStrings__DefaultConnection=Host=postgres;Port=${POSTGRES_PORT};Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}
       - ASPNETCORE_ENVIRONMENT=Development
-    networks:
-      - postgres
+    networks: [backend]
     restart: unless-stopped
 
   postgres:
@@ -24,8 +23,7 @@
       PGDATA: /data/postgres
     volumes:
       - postgres:/data/postgres
-    networks:
-      - postgres
+    networks: [backend]
     restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
@@ -42,10 +40,8 @@
       PGADMIN_CONFIG_SERVER_MODE: 'False'
     volumes:
       - pgadmin:/var/lib/pgadmin
-    networks:
-      - postgres
-    ports:
-      - "${PGADMIN_PORT}:80"
+    networks: [backend]
+    ports: ["127.0.0.1:${PGADMIN_PORT}:80"]
     restart: unless-stopped
 
   nginx:
@@ -58,13 +54,12 @@
       - ./certs:/etc/nginx/certs:ro
     depends_on:
       paperless:
-        condition: service_healthy
+        condition: service_started
       dms_swen3:
         condition: service_started
       client:
         condition: service_healthy
-    networks:
-      - postgres
+    networks: [backend, edge]
     restart: unless-stopped
 
   client:
@@ -77,8 +72,7 @@
     depends_on:
       dms_swen3:
         condition: service_started
-    networks:
-      - postgres
+    networks: [backend]
     restart: unless-stopped
     healthcheck:
       test: [ "CMD-SHELL", "test -s /usr/share/nginx/html/index.html || wget -q --spider http://localhost/" ]
@@ -105,19 +99,32 @@
     volumes:
       - paperless_data:/usr/src/paperless/data
       - paperless_media:/usr/src/paperless/media
-    networks:
-      - postgres
+    networks: [backend]
     restart: unless-stopped
 
   redis:
     image: redis:alpine
     command: [ "redis-server", "--appendonly", "yes" ]
-    networks:
-      - postgres
+    networks: [backend]
+    restart: unless-stopped
+    
+  rabbitmq:
+    networks: [backend, edge]
+    image: rabbitmq:4.1-management
+    ports:
+    - "127.0.0.1:15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
     restart: unless-stopped
 
 networks:
-  postgres:
+  backend:
+    driver: bridge
+    internal: true
+  edge:
     driver: bridge
 
 volumes:
@@ -125,3 +132,4 @@ volumes:
   pgadmin:
   paperless_data:
   paperless_media:
+  rabbitmq_data:
